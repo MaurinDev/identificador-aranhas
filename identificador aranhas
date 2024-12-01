@@ -1,0 +1,98 @@
+#--------------------------IDENTIFICADOR DE POSSÍVEL ESPÉCIE DE ARANHA-----------------------
+regras = [
+    {
+        #espécies de aranhas que serão utilizadas no teste
+        "nome": "Aranha-armadeira",
+        "tamanho_aranha": ["Grande, do tamanho de um palmo de mão.", "Média, um pouco menor que um palmo de mão"],
+        "cor_aranha": ["Marrom acinzentada"],
+        "postura": ["Sim, assumiu postura estranha."],
+        "extra_info": ["As presas tinham uma coloração diferente.", "Parecia ter pelos pelo corpo todo"]
+    },
+    {
+        "nome": "Aranha-caranguejeira ou Tarântula",
+        "tamanho_aranha": ["Grande, do tamanho de um palmo de mão.", "Grande, maior do que um palmo de mão."],
+        "cor_aranha": ["Preta", "Marrom", "Marrom acinzentada"],
+        "postura": ["Não, não assumiu postura estranha"],
+        "extra_info": ["Parecia ter pelos pelo corpo todo"]
+    },
+    {
+        "nome": "Aranha-marrom",
+        "tamanho_aranha": ["Pequena, quase não vi", "Pequena, nem mesmo a vi"],
+        "cor_aranha": ["Marrom clara", "Marrom"],
+        "postura": ["Não, não assumiu postura estranha."],
+        "extra_info": ["Tinha um desenho estranho no corpo", "Mal senti a picada."]
+    },
+    {
+        "nome": "Viúva-negra",
+        "tamanho_aranha": ["Pequena, quase não vi", "Pequena, nem mesmo a vi"],
+        "cor_aranha": ["Preta"],
+        "postura": ["Não, não assumiu postura estranha."],
+        "extra_info": ["Tinha um desenho estranho no corpo"]
+    }
+
+]
+
+# ---------------------------   Escolha de opções  ------------------------
+def exibir_opcoes(titulo, opcoes):
+    print(f"\n{titulo}:\n")
+    for idx, opcao in enumerate(opcoes, 1):
+        print(f"{idx}. {opcao}")
+    escolha = int(input("\nEscolha o número correspondente à opção:"))
+    return opcoes[escolha - 1]
+
+# -------------------------- Probabilidades para achar a espécie -------------------------
+def calcular_probabilidades(respostas):
+    resultados = {}
+    for especie in regras:
+        pontos = 0
+        total_criterios = 3
+
+        if respostas["tamanho_aranha"] in especie["tamanho_aranha"]:
+            pontos += 1
+        if respostas["postura"] in especie["postura"]:
+            pontos += 1
+        if respostas["cor_aranha"] in especie["cor_aranha"]:
+            pontos += 1
+
+        # Verificar informações extras.
+        if especie["extra_info"] and respostas["extra_info"] in especie["extra_info"]:
+            pontos += 1
+            total_criterios += 1  # Considera o critério extra
+
+        # Calcula a porcentagem
+        resultados[especie["nome"]] = (pontos / total_criterios) * 100
+
+    return resultados
+
+# ------------------------- Recebe as respostas das opções --------------------------------
+def coletar_respostas():
+    tamanho_aranha = exibir_opcoes("Qual era o tamanho da aranha que lhe atacou?", ["Grande, maior do que um palmo de mão.", "Grande, do tamanho de um palmo de mão.", "Média, um pouco menor que um palmo de mão", "Pequena, quase não vi", "Pequena, nem mesmo a vi"])
+    cor_aranha = exibir_opcoes("Qual era a cor dessa aranha?", ["Preta", "Marrom", "Marrom acinzentada", "Marrom clara"])
+    postura = exibir_opcoes("A aranha assumiu alguma postura estranha antes ou após o ataque?", ["Sim, assumiu postura estranha.", "Não, não assumiu postura estranha."])
+    extra_info = exibir_opcoes("Para fins de confirmação: Mais algum detalhe que acredite ser importante mencionar?", ["As presas tinham uma coloração diferente.", "Parecia ter pelos pelo corpo todo", "Tinha um desenho estranho no corpo", "Mal senti a picada."])
+    #a função retorna as opções escolhidas
+    return {
+        "tamanho_aranha": tamanho_aranha,
+        "cor_aranha": cor_aranha,
+        "postura": postura,
+        "extra_info": extra_info
+    }
+
+#------------------------------ Função principal ------------------------------
+def main():
+    print("\n------------------- IDENTIFICADOR DE ARANHAS -----------------\n")
+    print("Responda as perguntas para identificar a possível espécie da aranha.\n")
+    respostas = coletar_respostas()
+    probabilidades = calcular_probabilidades(respostas)
+
+    print("\n----------------------- Resultados ----------------------\n")
+
+    for aranha, prob in sorted(probabilidades.items(), key=lambda x: x[1], reverse=True):
+        cor = "\033[92m" if prob >= 60 else "\033[1m"  #O sistema irá alterar a coloração da especíe que possuir uma probabilidade superior a 60%
+        print(f"{cor}{aranha}: {prob:.2f}%\033[0m")
+    print("\nNosso teste serve apenas para identificação da possível aranha que lhe atacou.")
+    print("Independentemente da resposta, recorra ao pronto-socorro para melhor avaliação.")
+    print("\n---------------------------------------------------------")
+
+if __name__ == "__main__":
+    main()
